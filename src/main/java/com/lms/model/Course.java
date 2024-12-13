@@ -1,69 +1,45 @@
 package com.lms.model;
 
-import java.util.ArrayList;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
+@Entity
+@Table(name = "courses")
+@Data
+@NoArgsConstructor
 public class Course {
-    private int courseId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String title;
     private String description;
     private String syllabus;
+
+    @ManyToOne
+    @JoinColumn(name = "instructor_id")
     private User instructor;
-    private List<User> enrolledStudents;
+
+    @OneToMany(mappedBy = "course")
+    private List<Subject> subjects;
+
+    @OneToMany(mappedBy = "course")
     private List<Assignment> assignments;
 
-    public Course(int courseId, String title, String description, String syllabus, User instructor) {
-        this.courseId = courseId;
-        this.title = title;
-        this.description = description;
-        this.syllabus = syllabus;
-        this.instructor = instructor;
-        this.enrolledStudents = new ArrayList<>();
-        this.assignments = new ArrayList<>();
-    }
+    @ManyToMany
+    @JoinTable(
+        name = "course_enrollments",
+        joinColumns = @JoinColumn(name = "course_id"),
+        inverseJoinColumns = @JoinColumn(name = "student_id")
+    )
+    private List<User> enrolledStudents;
 
-    // Getters and Setters
-    public int getCourseId() {
-        return courseId;
-    }
+    @OneToMany(mappedBy = "course")
+    private List<Semester> semesters;
 
-    public void setCourseId(int courseId) {
-        this.courseId = courseId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getSyllabus() {
-        return syllabus;
-    }
-
-    public void setSyllabus(String syllabus) {
-        this.syllabus = syllabus;
-    }
-
-    public List<User> getEnrolledStudents() {
-        return enrolledStudents;
-    }
-
-    public List<Assignment> getAssignments() {
-        return assignments;
-    }
-
-    public User getInstructor() {
-        return instructor;
-    }
+    @OneToMany(mappedBy = "course")
+    private List<FeeStructure> feeStructures;
 } 
